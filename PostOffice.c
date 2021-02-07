@@ -20,21 +20,77 @@ static void Test_shouldAddCustomerToQueue(){
 	aCustomer.waiting_time=5;
 
 	aQueue = Queue_push(aQueue,aCustomer);
-
-    assert( !Queue_isEmpty(aQueue) && "Test_shouldAddCustomerToQueue()" );
-
+  assert( !Queue_isEmpty(aQueue) && "Test_shouldAddCustomerToQueue()" );
 	Queue_print(aQueue);
+}
+
+static void Test_shouldAddTwoCustomersToQueue(){
+  Node_t* aQueue = Queue_new();
+  Customer_t aAlice;
+	aAlice.waiting_time=1;
+  Customer_t aBernard;
+	aBernard.waiting_time=2;
+
+  aQueue = Queue_push(aQueue,aAlice);
+  aQueue = Queue_push(aQueue,aBernard);
+
+  assert( (Queue_size(aQueue) == 2) && "Test_shouldAddTwoCustomersToQueue()"  );
+  printf("queue_size is equal to %i\n",Queue_size(aQueue));
+} 
+
+static void Test_shouldPopACustomersFromTheQueue(){
+  Node_t* aQueue = Queue_new();
+  Customer_t aAlice;
+	aAlice.waiting_time=1;
+  Customer_t aBernard;
+	aBernard.waiting_time=2;
+
+  aQueue = Queue_push(aQueue,aAlice);
+  aQueue = Queue_push(aQueue,aBernard);
+
+  Customer_t aPoppedCustomer;
+  aPoppedCustomer = Queue_pop(&aQueue);
+  assert( (Queue_size(aQueue) == 1) && "Test_shouldPopACustomersFromTheQueue()"  );
+  assert( (aQueue->value.waiting_time == 2) && "Test_shouldPopACustomersFromTheQueue()" );
+  Queue_print(aQueue);
+}
+
+static void Test_shouldPopTheOnlyCustomerFromTheQueue(){
+  Node_t* aQueue = Queue_new();
+  Customer_t aAlice;
+	aAlice.waiting_time=1;
+  
+  aQueue = Queue_push(aQueue,aAlice);
+
+  Customer_t aPoppedCustomer;
+  aPoppedCustomer = Queue_pop(&aQueue);
+  
+  assert( Queue_isEmpty(aQueue) && "Test_shouldPopTheOnlyCustomerFromTheQueue()" );
+  Queue_print(aQueue);
+}
+
+static void Test_shouldReturnUninitializedCustomerFromAnEmptyQueue(){
+Node_t* aQueue = Queue_new();
+Customer_t Empty_customer;
+Empty_customer = Queue_pop(&aQueue);
+  assert( Queue_isEmpty(aQueue) && "Test_shouldReturnUninitializedCustomerFromAnEmptyQueue()" );
+  assert( (Empty_customer.waiting_time == -1) && "Test_shouldReturnUninitializedCustomerFromAnEmptyQueue()");
+Queue_print(aQueue);
+
 }
 
 int main(){
 
   Test_shouldCreateEmptyQueue();
   Test_shouldAddCustomerToQueue();
+  Test_shouldAddTwoCustomersToQueue();
+  Test_shouldPopACustomersFromTheQueue();
+  Test_shouldPopTheOnlyCustomerFromTheQueue();
+  Test_shouldReturnUninitializedCustomerFromAnEmptyQueue();
+
 
   //suggested other tests
-  // Test_shouldAddTwoCustomersToQueue();                ==> Introduce a way to count the number of items in the queue
   // Test_shouldNotAddCustomerToQueueIfQueueIsFull();    ==> Introduce concept of the queue max size
-  // Test_shouldPopACustomersFromTheQueue();
   // Test_shouldRemoveAnExpiredCustomerFromTheQueue();
 
   printf ("All tests Passed!");
@@ -93,17 +149,17 @@ int main(){
 // //add an element to the queue
 // void addToQueue(CUSTOMER value, NODE *head) {
 
-// 	//create new node
+	// //create new node
 
-// 	struct NODE newNode;
-// 	newNode.value = value;
-// 	newNode.nextNode = NULL;
+	// struct NODE newNode;
+	// newNode.value = value;
+	// newNode.nextNode = NULL;
 
-// 	//create pointer to that node
-// 	struct NODE* pointerToNewNode;
-// 	pointerToNewNode = (NODE*)malloc(sizeof(NODE));
-// 	// do the malloc test
-// 	pointerToNewNode = &newNode;
+	// //create pointer to that node
+	// struct NODE* pointerToNewNode;
+	// pointerToNewNode = (NODE*)malloc(sizeof(NODE));
+	// // do the malloc test
+	// pointerToNewNode = &newNode;
 	
 
 // 	//find the last node
