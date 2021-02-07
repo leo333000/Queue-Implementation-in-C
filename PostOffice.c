@@ -31,6 +31,12 @@ int main(){
   Test_shouldCreateEmptyQueue();
   Test_shouldAddCustomerToQueue();
 
+  //suggested other tests
+  // Test_shouldAddTwoCustomersToQueue();                ==> Introduce a way to count the number of items in the queue
+  // Test_shouldNotAddCustomerToQueueIfQueueIsFull();    ==> Introduce concept of the queue max size
+  // Test_shouldPopACustomersFromTheQueue();
+  // Test_shouldRemoveAnExpiredCustomerFromTheQueue();
+
   printf ("All tests Passed!");
 }
 
