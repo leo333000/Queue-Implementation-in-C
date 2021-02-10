@@ -82,15 +82,17 @@ Customer_t Queue_pop(Node_t** ioAddress_Head_ptr){
 
 // Before:
 // -> iHead_ptr -> A0 -> B1 -> NULL
-// pop
+// RemoveExpired
 // After:
 // -> iHead_ptr -> B0 -> Null
+Node_t* Queue_RemoveExpired(Node_t* ioHead_ptr){
+    printf("enter Queue_RemoveExpired\n");
 
-Node_t* Queue_testExpiration(Node_t* ioHead_ptr){
+    if(Queue_isEmpty(ioHead_ptr)){
+        return NULL;
+    }
 
      Node_t * aCurrent_ptr = ioHead_ptr;
-     printf("enter Queue_testExpiration\n");
-    
      while (aCurrent_ptr->next_ptr != NULL) {
          printf("enter While\n");
 
@@ -101,24 +103,18 @@ Node_t* Queue_testExpiration(Node_t* ioHead_ptr){
                  printf("enter if: value is of 0 and points to null\n");
                  free(aCurrent_ptr->next_ptr);
                  aCurrent_ptr->next_ptr = NULL;
-                 
              }
              else{
                  printf("enter if: value is of 0 and points to another node\n");
                 Node_t * aTemporary_ptr = aCurrent_ptr->next_ptr;
                 aCurrent_ptr->next_ptr = aCurrent_ptr->next_ptr->next_ptr; 
                 free(aTemporary_ptr);
-                
-                
              }
          }else{
              printf("enter else: \n");
              aCurrent_ptr->next_ptr->value.waiting_time--;
              aCurrent_ptr = aCurrent_ptr->next_ptr;
          }
-         
-        
-    
     }
 
     if(ioHead_ptr->value.waiting_time == 0){
@@ -131,5 +127,4 @@ Node_t* Queue_testExpiration(Node_t* ioHead_ptr){
         return ioHead_ptr;
     }
 
-    
 }

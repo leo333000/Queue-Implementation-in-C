@@ -1,45 +1,51 @@
 #include "PostOffice.h"
 
+//Prototypes
+Customer_t customer_createWT(int iWaitingTime);
+Customer_t customer_create();
+
 
 static void Test_shouldCreateEmptyQueue(){
 	Node_t* aQueue = Queue_new();
-    assert( Queue_isEmpty(aQueue) && "Test_shouldCreateEmptyQueue()" );
-	Queue_print(aQueue);
+  assert( Queue_isEmpty(aQueue) && "Test_shouldCreateEmptyQueue()" );
+  Queue_print(aQueue);
 }
 
 static void Test_shouldAddCustomerToQueue(){
 	Node_t* aQueue = Queue_new();
-	Customer_t aCustomer;
-	aCustomer.waiting_time=5;
 
-	aQueue = Queue_push(aQueue,aCustomer);
+	aQueue = Queue_push(aQueue,customer_createWT(5));
+
   assert( !Queue_isEmpty(aQueue) && "Test_shouldAddCustomerToQueue()" );
-	Queue_print(aQueue);
+  assert( (aQueue->value.waiting_time == 5)  && "Test_shouldAddCustomerToQueue()" );
+  Queue_print(aQueue);
+}
+
+static void Test_shouldAddRandomCustomerInQueue(){
+  Node_t* aQueue = Queue_new();
+  Customer_t aRandomCustomer = customer_create();
+  aQueue = Queue_push(aQueue,aRandomCustomer);
+  assert( (Queue_size(aQueue) == 1) && "Test_shouldAddRandomCustomerInQueue()"  );
+  Queue_print(aQueue);
 }
 
 static void Test_shouldAddTwoCustomersToQueue(){
   Node_t* aQueue = Queue_new();
-  Customer_t aAlice;
-	aAlice.waiting_time=1;
-  Customer_t aBernard;
-	aBernard.waiting_time=2;
 
-  aQueue = Queue_push(aQueue,aAlice);
-  aQueue = Queue_push(aQueue,aBernard);
+  aQueue = Queue_push(aQueue,customer_createWT(1));
+  aQueue = Queue_push(aQueue,customer_createWT(2));
 
   assert( (Queue_size(aQueue) == 2) && "Test_shouldAddTwoCustomersToQueue()"  );
-  printf("queue_size is equal to %i\n",Queue_size(aQueue));
+  assert( (aQueue->value.waiting_time == 2)  && "Test_shouldAddCustomerToQueue()" );
+  assert( (aQueue->next_ptr->value.waiting_time == 1)  && "Test_shouldAddCustomerToQueue()" );
+  Queue_print(aQueue);
 } 
 
 static void Test_shouldPopACustomersFromTheQueue(){
   Node_t* aQueue = Queue_new();
-  Customer_t aAlice;
-	aAlice.waiting_time=1;
-  Customer_t aBernard;
-	aBernard.waiting_time=2;
 
-  aQueue = Queue_push(aQueue,aAlice);
-  aQueue = Queue_push(aQueue,aBernard);
+  aQueue = Queue_push(aQueue,customer_createWT(1));
+  aQueue = Queue_push(aQueue,customer_createWT(2));
 
   Customer_t aPoppedCustomer;
   aPoppedCustomer = Queue_pop(&aQueue);
@@ -50,10 +56,8 @@ static void Test_shouldPopACustomersFromTheQueue(){
 
 static void Test_shouldPopTheOnlyCustomerFromTheQueue(){
   Node_t* aQueue = Queue_new();
-  Customer_t aAlice;
-	aAlice.waiting_time=1;
   
-  aQueue = Queue_push(aQueue,aAlice);
+  aQueue = Queue_push(aQueue,customer_createWT(1));
 
   Customer_t aPoppedCustomer;
   aPoppedCustomer = Queue_pop(&aQueue);
@@ -62,83 +66,122 @@ static void Test_shouldPopTheOnlyCustomerFromTheQueue(){
   Queue_print(aQueue);
 }
 
-static void Test_shouldReturnUninitializedCustomerFromAnEmptyQueue(){
-Node_t* aQueue = Queue_new();
-Customer_t Empty_customer;
-Empty_customer = Queue_pop(&aQueue);
+static void Test_shouldPopUninitializedCustomerFromAnEmptyQueue(){
+  Node_t* aQueue = Queue_new();
+  Customer_t Empty_customer;
+
+  Empty_customer = Queue_pop(&aQueue);
+
   assert( Queue_isEmpty(aQueue) && "Test_shouldReturnUninitializedCustomerFromAnEmptyQueue()" );
   assert( (Empty_customer.waiting_time == -1) && "Test_shouldReturnUninitializedCustomerFromAnEmptyQueue()");
-Queue_print(aQueue);
-
+  Queue_print(aQueue);
 }
 
-static void Test_shouldRemoveAnExpiredCustomerFromTheQueue(){
+
+static void Test_shouldRemoveAnExpiredCustomerFromENDOfTheQueue(){
+  printf("Test_shouldRemoveAnExpiredCustomerFromENDOfTheQueue");
   Node_t* aQueue = Queue_new();
-  Customer_t aSam;
-	aSam.waiting_time=1;
-  Customer_t aAlice;
-	aAlice.waiting_time=0;
-  Customer_t aBernard;
-	aBernard.waiting_time=1;
 
-  aQueue = Queue_push(aQueue,aAlice);
-  aQueue = Queue_push(aQueue,aBernard);
-  aQueue = Queue_push(aQueue,aSam);
+  aQueue = Queue_push(aQueue,customer_createWT(0));
+  aQueue = Queue_push(aQueue,customer_createWT(1));
+  aQueue = Queue_push(aQueue,customer_createWT(2));
+
+  Queue_print(aQueue);
+  aQueue = Queue_RemoveExpired(aQueue);
   Queue_print(aQueue);
 
-  aQueue = Queue_testExpiration(aQueue);
+  assert( (Queue_size(aQueue) == 2) && "Test_shouldRemoveAnExpiredCustomerFromENDOfTheQueue()"  );
+  assert( (aQueue->value.waiting_time == 1 ) && "Test_shouldRemoveAnExpiredCustomerFromENDOfTheQueue()"  );
+  assert( (aQueue->next_ptr->value.waiting_time == 0 ) && "Test_shouldRemoveAnExpiredCustomerFromENDOfTheQueue()"  );
+}
+
+static void Test_shouldRemoveAnExpiredCustomerFromMIDDLEOfTheQueue(){
+  printf("Test_shouldRemoveAnExpiredCustomerFromMIDDLEOfTheQueue\n");
+  Node_t* aQueue = Queue_new();
+
+  aQueue = Queue_push(aQueue,customer_createWT(1));
+  aQueue = Queue_push(aQueue,customer_createWT(0));
+  aQueue = Queue_push(aQueue,customer_createWT(2));
+
   Queue_print(aQueue);
-  assert( (Queue_size(aQueue) == 2) && "Test_shouldRemoveAnExpiredCustomerFromTheQueue()"  );
+  aQueue = Queue_RemoveExpired(aQueue);
+  Queue_print(aQueue);
+
+  assert( (Queue_size(aQueue) == 2) && "Test_shouldRemoveAnExpiredCustomerFromMIDDLEOfTheQueue()"  );
+  assert( (aQueue->value.waiting_time == 1 ) && "Test_shouldRemoveAnExpiredCustomerFromMIDDLEOfTheQueue()"  );
+  assert( (aQueue->next_ptr->value.waiting_time == 0 ) && "Test_shouldRemoveAnExpiredCustomerFromMIDDLEOfTheQueue()"  );
+}
+
+static void Test_shouldRemoveAnExpiredCustomerFromSTARTOfTheQueue(){
+  printf("Test_shouldRemoveAnExpiredCustomerFromSTARTOfTheQueue\n");
+  Node_t* aQueue = Queue_new();
+
+  aQueue = Queue_push(aQueue,customer_createWT(0));
+  aQueue = Queue_push(aQueue,customer_createWT(1));
+  aQueue = Queue_push(aQueue,customer_createWT(2));
+  Queue_print(aQueue);
+
+  aQueue = Queue_RemoveExpired(aQueue);
+  Queue_print(aQueue);
+  assert( (Queue_size(aQueue) == 2) && "Test_shouldRemoveAnExpiredCustomerFromSTARTOfTheQueue()"  );
+  assert( (aQueue->value.waiting_time == 1 ) && "Test_shouldRemoveAnExpiredCustomerFromSTARTOfTheQueue()"  );
+  assert( (aQueue->next_ptr->value.waiting_time == 0 ) && "Test_shouldRemoveAnExpiredCustomerFromSTARTOfTheQueue()"  );
+}
+
+static void Test_shouldDoNothingWhenExpiringCustomerFromAnEmptyQueue(){
+  printf("Test_shouldDoNothingWhenExpiringCustomerFromAnEmptyQueue\n");
+  Node_t* aQueue = Queue_new();
+
+  aQueue = Queue_RemoveExpired(aQueue);
   
-}
-
-static void Test_shouldCreateARandomCustomerAndAddHimToQueue(){
-  Node_t* aQueue = Queue_new();
-  Customer_t aRandomCustomer = customer_create();
-  aQueue = Queue_push(aQueue,aRandomCustomer);
-  Queue_print(aQueue);
-  assert( (Queue_size(aQueue) == 1) && "Test_shouldCreateARandomCustomerAndAddHimToQueue()"  );
-  Queue_print(aQueue);
+  assert( Queue_isEmpty(aQueue) && "Test_shouldDoNothingWhenExpiringCustomerFromAnEmptyQueue()" );
 }
 
 
 
 // static void Test_shouldNotAddCustomerToQueueIfQueueIsFull(){
 //    Node_t* aQueue = Queue_new();
-//   Customer_t aAlice;
-// 	aAlice.waiting_time=1;
-//   Customer_t aBernard;
-// 	aBernard.waiting_time=2;
 
-//   aQueue = Queue_push(aQueue,aAlice);
-//   aQueue = Queue_push(aQueue,aBernard);
+//   aQueue = Queue_push(aQueue,customer_createWT(0));
+//   aQueue = Queue_push(aQueue,customer_createWT(1));
 
 //   assert( (Queue_size(aQueue) == 2) && "Test_shouldNotAddCustomerToQueueIfQueueIsFull()"  );
 // }
 
 int main(){
 
+  printf("\n== CREATE\n");
   Test_shouldCreateEmptyQueue();
+
+  printf("\n== PUSH\n");
   Test_shouldAddCustomerToQueue();
   Test_shouldAddTwoCustomersToQueue();
+  Test_shouldAddRandomCustomerInQueue();
+
+  printf("\n== POP\n");
   Test_shouldPopACustomersFromTheQueue();
   Test_shouldPopTheOnlyCustomerFromTheQueue();
-  Test_shouldReturnUninitializedCustomerFromAnEmptyQueue();
-  Test_shouldRemoveAnExpiredCustomerFromTheQueue();
-  Test_shouldCreateARandomCustomerAndAddHimToQueue();
+  Test_shouldPopUninitializedCustomerFromAnEmptyQueue();
+
+  printf("\n== REMOVE EXPIRED\n");
+  Test_shouldRemoveAnExpiredCustomerFromENDOfTheQueue();
+  Test_shouldRemoveAnExpiredCustomerFromMIDDLEOfTheQueue();
+  Test_shouldRemoveAnExpiredCustomerFromSTARTOfTheQueue();
+  Test_shouldDoNothingWhenExpiringCustomerFromAnEmptyQueue();
+
   // Test_shouldNotAddCustomerToQueueIfQueueIsFull();
-
-  //suggested other tests
-
-  // Test_shouldRemoveAnExpiredCustomerFromTheQueue();
 
   printf ("All tests Passed!");
 }
 
 Customer_t customer_create() {
-
 	Customer_t oNew_customer;
 	oNew_customer.waiting_time = (rand() % 6) +4;
+	return oNew_customer;
+}
+Customer_t customer_createWT(int iWaitingTime) {
+	Customer_t oNew_customer;
+	oNew_customer.waiting_time = iWaitingTime;
 	return oNew_customer;
 }
 
