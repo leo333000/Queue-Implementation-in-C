@@ -1,12 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include "PostOffice.h"
 
-#include <assert.h>
-#include <stddef.h>
-
-#include "Queue.h"
 
 static void Test_shouldCreateEmptyQueue(){
 	Node_t* aQueue = Queue_new();
@@ -79,6 +72,50 @@ Queue_print(aQueue);
 
 }
 
+static void Test_shouldRemoveAnExpiredCustomerFromTheQueue(){
+  Node_t* aQueue = Queue_new();
+  Customer_t aSam;
+	aSam.waiting_time=1;
+  Customer_t aAlice;
+	aAlice.waiting_time=0;
+  Customer_t aBernard;
+	aBernard.waiting_time=1;
+
+  aQueue = Queue_push(aQueue,aAlice);
+  aQueue = Queue_push(aQueue,aBernard);
+  aQueue = Queue_push(aQueue,aSam);
+  Queue_print(aQueue);
+
+  aQueue = Queue_testExpiration(aQueue);
+  Queue_print(aQueue);
+  assert( (Queue_size(aQueue) == 2) && "Test_shouldRemoveAnExpiredCustomerFromTheQueue()"  );
+  
+}
+
+static void Test_shouldCreateARandomCustomerAndAddHimToQueue(){
+  Node_t* aQueue = Queue_new();
+  Customer_t aRandomCustomer = customer_create();
+  aQueue = Queue_push(aQueue,aRandomCustomer);
+  Queue_print(aQueue);
+  assert( (Queue_size(aQueue) == 1) && "Test_shouldCreateARandomCustomerAndAddHimToQueue()"  );
+  Queue_print(aQueue);
+}
+
+
+
+// static void Test_shouldNotAddCustomerToQueueIfQueueIsFull(){
+//    Node_t* aQueue = Queue_new();
+//   Customer_t aAlice;
+// 	aAlice.waiting_time=1;
+//   Customer_t aBernard;
+// 	aBernard.waiting_time=2;
+
+//   aQueue = Queue_push(aQueue,aAlice);
+//   aQueue = Queue_push(aQueue,aBernard);
+
+//   assert( (Queue_size(aQueue) == 2) && "Test_shouldNotAddCustomerToQueueIfQueueIsFull()"  );
+// }
+
 int main(){
 
   Test_shouldCreateEmptyQueue();
@@ -87,18 +124,29 @@ int main(){
   Test_shouldPopACustomersFromTheQueue();
   Test_shouldPopTheOnlyCustomerFromTheQueue();
   Test_shouldReturnUninitializedCustomerFromAnEmptyQueue();
-
+  Test_shouldRemoveAnExpiredCustomerFromTheQueue();
+  Test_shouldCreateARandomCustomerAndAddHimToQueue();
+  // Test_shouldNotAddCustomerToQueueIfQueueIsFull();
 
   //suggested other tests
-  // Test_shouldNotAddCustomerToQueueIfQueueIsFull();    ==> Introduce concept of the queue max size
+
   // Test_shouldRemoveAnExpiredCustomerFromTheQueue();
 
   printf ("All tests Passed!");
 }
 
+Customer_t customer_create() {
+
+	Customer_t oNew_customer;
+	oNew_customer.waiting_time = (rand() % 6) +4;
+	return oNew_customer;
+}
+
+
+//creates a value of type customer (which for now has just a waiting time, which is constant). for testing purposes
 
 //prototype
-// struct CUSTOMER customer_create();
+
 // void addToQueue(CUSTOMER value, NODE* lastNode);
 // struct NODE* headQueue(CUSTOMER value);
 // struct CUSTOMER customer_create_test();
@@ -132,19 +180,8 @@ int main(){
 // }
 
 // //creates a value of type customer (which for now has just a waiting time, which is given to him randomly)
-// struct CUSTOMER customer_create() {
 
-// 	struct CUSTOMER new_customer;
-// 	new_customer.waiting_time = (rand() % 6) +4;
-// 	return new_customer;
-// }
-// //creates a value of type customer (which for now has just a waiting time, which is constant). for testing purposes
-// struct CUSTOMER customer_create_test() {
 
-// 	struct CUSTOMER new_customer;
-// 	new_customer.waiting_time = 100;
-// 	return new_customer;
-// }
 
 // //add an element to the queue
 // void addToQueue(CUSTOMER value, NODE *head) {
