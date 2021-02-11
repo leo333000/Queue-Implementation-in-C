@@ -137,6 +137,35 @@ static void Test_shouldDoNothingWhenExpiringCustomerFromAnEmptyQueue(){
   assert( Queue_isEmpty(aQueue) && "Test_shouldDoNothingWhenExpiringCustomerFromAnEmptyQueue()" );
 }
 
+static void Test_shouldRemoveSingleExpiredCustomerFromQueue(){
+  printf("Test_shouldRemoveSingleExpiredCustomerFromQueue");
+  Node_t* aQueue = Queue_new();
+
+  aQueue = Queue_push(aQueue,customer_createWT(0));
+  
+  Queue_print(aQueue);
+  aQueue = Queue_RemoveExpired(aQueue);
+  Queue_print(aQueue);
+
+  assert( Queue_isEmpty(aQueue) && "Test_shouldRemoveSingleExpiredCustomerFromQueue()");
+}
+
+static void Test_shouldNotRemoveAnyCustomerFromQueue(){
+  printf("Test_shouldNotRemoveAnyCustomerFromQueue");
+  Node_t* aQueue = Queue_new();
+
+  aQueue = Queue_push(aQueue,customer_createWT(3));
+  aQueue = Queue_push(aQueue,customer_createWT(1));
+  
+  Queue_print(aQueue);
+  aQueue = Queue_RemoveExpired(aQueue);
+  Queue_print(aQueue);
+
+  assert( (Queue_size(aQueue) == 2) && "Test_shouldNotRemoveAnyCustomerFromQueue()"  );
+  assert( (aQueue->value.waiting_time == 0 ) && "Test_shouldNotRemoveAnyCustomerFromQueue()"  );
+  assert( (aQueue->next_ptr->value.waiting_time == 2 ) && "Test_shouldNotRemoveAnyCustomerFromQueue()"  );
+}
+
 
 
 // static void Test_shouldNotAddCustomerToQueueIfQueueIsFull(){
@@ -168,6 +197,8 @@ int main(){
   Test_shouldRemoveAnExpiredCustomerFromMIDDLEOfTheQueue();
   Test_shouldRemoveAnExpiredCustomerFromSTARTOfTheQueue();
   Test_shouldDoNothingWhenExpiringCustomerFromAnEmptyQueue();
+  Test_shouldRemoveSingleExpiredCustomerFromQueue();
+  Test_shouldNotRemoveAnyCustomerFromQueue();
 
   // Test_shouldNotAddCustomerToQueueIfQueueIsFull();
 
