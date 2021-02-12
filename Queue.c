@@ -86,7 +86,7 @@ Customer_t Queue_pop(Node_t** ioAddress_Head_ptr){
 // After:
 // -> iHead_ptr -> B0 -> Null
 Node_t* Queue_RemoveExpired(Node_t* ioHead_ptr){
-    printf("enter Queue_RemoveExpired\n");
+    
 
     if(Queue_isEmpty(ioHead_ptr)){
         return NULL;
@@ -94,24 +94,24 @@ Node_t* Queue_RemoveExpired(Node_t* ioHead_ptr){
 
      Node_t * aCurrent_ptr = ioHead_ptr;
      while (aCurrent_ptr->next_ptr != NULL) {
-         printf("enter While\n");
+         
 
          if (aCurrent_ptr->next_ptr->value.waiting_time == 0)
          {
-             printf("enter if: value is of 0\n");
+             
              if (aCurrent_ptr->next_ptr->next_ptr == NULL){
-                 printf("enter if: value is of 0 and points to null\n");
+                 
                  free(aCurrent_ptr->next_ptr);
                  aCurrent_ptr->next_ptr = NULL;
              }
              else{
-                 printf("enter if: value is of 0 and points to another node\n");
+                 
                 Node_t * aTemporary_ptr = aCurrent_ptr->next_ptr;
                 aCurrent_ptr->next_ptr = aCurrent_ptr->next_ptr->next_ptr; 
                 free(aTemporary_ptr);
              }
          }else{
-             printf("enter else: \n");
+             
              aCurrent_ptr->next_ptr->value.waiting_time--;
              aCurrent_ptr = aCurrent_ptr->next_ptr;
          }

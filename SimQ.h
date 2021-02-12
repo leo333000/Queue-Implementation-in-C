@@ -8,4 +8,4 @@
 
 #include "Queue.h"
 
-Customer_t customer_create();
+Customer_t simQ_customer_create();
